@@ -1,25 +1,31 @@
 import cv2
 
 #choose an image to detect face in
-img = cv2.imread('chat.jpg')
+#img = cv2.imread('chat.jpg')
 
-#convertion de l'image en noir et blanc (nécessaire pour le "haar Cascade")
-black_n_white_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#to capture from camera
+webcam = cv2.VideoCapture(0)
 
-#pre-trained data on frontal faces from opencv github (haar cascad algorithm)
-trained_face_data = cv2.CascadeClassifier('facedetector.xml')
+while True:
+    (read_successful, frame) = webcam.read()
 
-#détection de voitures
-faces = trained_face_data.detectMultiScale(black_n_white_image)
+    if read_successful:
+        # change la couleur du frame en noir et blanc
+        black_n_white_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    else:
+        break
 
-print(faces)
+    # pre-trained data on frontal faces from opencv github (haar cascad algorithm)
+    trained_face_data = cv2.CascadeClassifier('facedetector.xml')
 
-#Dessin des rectangles sur les voitures détécté
-for (x, y, w, h) in faces:
-    cv2.rectangle(img, (x,y), (x+w, y+h), (0, 0, 255), 2)
+    # détection de visages
+    faces = trained_face_data.detectMultiScale(black_n_white_image)
 
-#show image
-cv2.imshow('Face detector', img)
-cv2.waitKey()
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-print('code Complete')
+    cv2.imshow('Face detector', frame)
+    key = cv2.waitKey(1)  # 1milisecond
+
+    if key == 81 or key == 113:
+        break
